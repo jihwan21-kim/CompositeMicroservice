@@ -1,0 +1,39 @@
+import os
+
+"""
+Configuration file for Composite Microservice.
+Contains IP addresses or URLs of Atomic Microservices.
+Using environment variables makes it future-proof (Cloud Run / Docker).
+"""
+
+# ------------------- Microservice URLs -------------------
+
+PATIENTS_MS_URL = os.getenv("PATIENTS_MS_URL", "http://10.128.0.3:8000")
+TRANSCRIPTIONS_MS_URL = os.getenv("TRANSCRIPTIONS_MS_URL", "http://10.128.0.7:8000")
+SUMMARIZATION_MS_URL = os.getenv("SUMMARIZATION_MS_URL", "http://10.128.0.6:8000")
+
+# Composite internal IP (optional)
+COMPOSITE_MS_URL = os.getenv("COMPOSITE_MS_URL", "http://10.128.0.12:8000")
+
+# UI / Proxy (External IP) (optional)
+UI_BASE_URL = os.getenv("UI_BASE_URL", "http://34.71.58.225:8000")
+
+
+# ------------------- General Settings -------------------
+
+REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", 10))  # seconds
+ENV = os.getenv("ENV", "development")  # or "production"
+
+DEBUG = ENV == "development"
+
+
+def print_config():
+    """Optional: Print config when app starts (debug mode only)."""
+    if DEBUG:
+        print("\n=== Composite Service Configuration ===")
+        print(f"Patients Service:    {PATIENTS_MS_URL}")
+        print(f"Transcriptions Service: {TRANSCRIPTIONS_MS_URL}")
+        print(f"Summarization Service:  {SUMMARIZATION_MS_URL}")
+        print(f"Composite Service:   {COMPOSITE_MS_URL}")
+        print(f"UI Base URL:         {UI_BASE_URL}")
+        print("=====================================\n")
