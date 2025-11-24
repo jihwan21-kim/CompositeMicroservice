@@ -1,7 +1,7 @@
 # app/services/patient_service.py
 
 import requests
-from app.config import PATIENTS_MS_URL, REQUEST_TIMEOUT
+from config import PATIENTS_MS_URL, REQUEST_TIMEOUT
 
 
 def get_patient_by_id(patient_id: int, etag: str | None = None):

@@ -1,7 +1,7 @@
 # app/routers/composite_routes.py
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from app.services.composite_service import composite_transcribe_and_summarize
+from services.composite_service import composite_transcribe_and_summarize
 
 router = APIRouter()
 

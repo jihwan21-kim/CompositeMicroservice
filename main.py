@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import composite_routes
+from routers import composite_routes
 
 
 def create_app() -> FastAPI:

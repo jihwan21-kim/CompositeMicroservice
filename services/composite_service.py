@@ -4,10 +4,10 @@ import threading
 from typing import Dict, Any
 from fastapi import UploadFile
 
-from app.services.patient_service import get_patient_by_id
-from app.services.transcription_service import get_transcription_text
-from app.services.summarization_service import generate_summary
-from app.models.patient_model import Patient
+from services.patient_service import get_patient_by_id
+from services.transcription_service import get_transcription_text
+from services.summarization_service import generate_summary
+from models.patient_model import Patient
 
 
 def composite_transcribe_and_summarize(patient_id: int, file: UploadFile) -> Dict[str, Any]:

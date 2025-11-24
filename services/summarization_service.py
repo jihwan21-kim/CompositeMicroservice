@@ -3,7 +3,7 @@
 import time
 import requests
 from typing import Dict, Any
-from app.config import SUMMARIZATION_MS_URL, REQUEST_TIMEOUT
+from config import SUMMARIZATION_MS_URL, REQUEST_TIMEOUT
 
 
 def request_async_summarization(input_text: str) -> Dict[str, Any]:

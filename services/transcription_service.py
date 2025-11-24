@@ -3,8 +3,8 @@
 import requests
 from typing import Dict, Any
 from fastapi import UploadFile
-from app.config import TRANSCRIPTIONS_MS_URL, REQUEST_TIMEOUT
-from app.models.transcription_model import Transcription
+from config import TRANSCRIPTIONS_MS_URL, REQUEST_TIMEOUT
+from models.transcription_model import Transcription
 
 
 def create_transcription_job(file: UploadFile) -> Dict[str, Any]:
