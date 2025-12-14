@@ -1,5 +1,4 @@
 import sys
-import json
 from pprint import pprint
 
 from services.patient_service import (
@@ -9,9 +8,6 @@ from services.patient_service import (
     update_patient,
     delete_patient,
 )
-
-# 테스트용 patient_id
-PATIENT_ID = 1
 
 # PatientCreate payload
 PATIENT_PAYLOAD = {
@@ -30,14 +26,21 @@ def usage():
     print(
         """
 Usage:
-  python test_patient.py <command>
+  python test_patient.py <command> [patient_id]
 
 Commands:
   1  GET  /patients
   2  POST /patients
-  3  GET  /patients/{id}
-  4  PUT  /patients/{id}
-  5  DELETE /patients/{id}
+  3  GET  /patients/{id}        (requires patient_id: str)
+  4  PUT  /patients/{id}        (requires patient_id: str)
+  5  DELETE /patients/{id}      (requires patient_id: str)
+
+Examples:
+  python test_patient.py 1
+  python test_patient.py 2
+  python test_patient.py 3 abc123
+  python test_patient.py 4 abc123
+  python test_patient.py 5 abc123
 """
     )
 
@@ -54,44 +57,57 @@ def test_post():
     pprint(result)
 
 
-def test_get_by_id():
-    print(f"==> GET /patients/{PATIENT_ID}")
-    result = get_patient_by_id(PATIENT_ID)
+def test_get_by_id(patient_id: str):
+    print(f"==> GET /patients/{patient_id}")
+    result = get_patient_by_id(patient_id)
     pprint(result)
 
 
-def test_put():
-    print(f"==> PUT /patients/{PATIENT_ID}")
+def test_put(patient_id: str):
+    print(f"==> PUT /patients/{patient_id}")
     updated_payload = PATIENT_PAYLOAD | {
         "condition": "Recovered, discharged"
     }
-    result = update_patient(PATIENT_ID, updated_payload)
+    result = update_patient(patient_id, updated_payload)
     pprint(result)
 
 
-def test_delete():
-    print(f"==> DELETE /patients/{PATIENT_ID}")
-    result = delete_patient(PATIENT_ID)
+def test_delete(patient_id: str):
+    print(f"==> DELETE /patients/{patient_id}")
+    result = delete_patient(patient_id)
     pprint(result)
 
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         usage()
         sys.exit(1)
 
     command = sys.argv[1]
 
+    # Commands without patient_id
     if command == "1":
         test_get_all()
-    elif command == "2":
+        return
+
+    if command == "2":
         test_post()
-    elif command == "3":
-        test_get_by_id()
+        return
+
+    # Commands that require patient_id (string)
+    if len(sys.argv) < 3:
+        print("❌ patient_id (string) is required for this command")
+        usage()
+        sys.exit(1)
+
+    patient_id = sys.argv[2]  # <-- keep as string
+
+    if command == "3":
+        test_get_by_id(patient_id)
     elif command == "4":
-        test_put()
+        test_put(patient_id)
     elif command == "5":
-        test_delete()
+        test_delete(patient_id)
     else:
         usage()
 

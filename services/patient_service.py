@@ -56,7 +56,7 @@ def create_patient(patient_data: dict):
 
     return {"error": f"Unexpected response: {response.status_code}", "details": response.text}
 
-def update_patient(patient_id: int, patient_data: dict, etag: str | None = None):
+def update_patient(patient_id: str, patient_data: dict, etag: str | None = None):
     """
     Calls Patients Microservice PUT /patients/{id}
     Supports:
@@ -92,7 +92,7 @@ def update_patient(patient_id: int, patient_data: dict, etag: str | None = None)
     return {"error": f"Unexpected response: {response.status_code}", "details": response.text}
 
 
-def get_patient_by_id(patient_id: int, etag: str | None = None):
+def get_patient_by_id(patient_id: str, etag: str | None = None):
     """
     Calls Patients Microservice GET /patients/{id}
     Supports:
@@ -131,7 +131,7 @@ def get_patient_by_id(patient_id: int, etag: str | None = None):
     # 기타 에러
     return {"error": f"Unexpected response: {response.status_code}", "details": response.text}
 
-def delete_patient(patient_id: int, etag: str | None = None):
+def delete_patient(patient_id: str, etag: str | None = None):
     """
     Calls Patients Microservice DELETE /patients/{id}
     Supports:
