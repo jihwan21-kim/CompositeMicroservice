@@ -5,8 +5,8 @@ from typing import Dict, Any
 from fastapi import UploadFile
 
 from services.patient_service import get_patient_by_id
-from services.transcription_service import get_transcription_text
-from services.summarization_service import generate_summary
+from services.transcription_service import get_transcription
+from services.summarization_service import get_summarization
 from models.patient_model import Patient
 
 
@@ -27,7 +27,7 @@ def composite_transcribe_and_summarize(patient_id: int, file: UploadFile) -> Dic
 
     # 2️⃣ Thread to transcribe audio
     def fetch_transcription():
-        results["transcription_text"] = get_transcription_text(file)
+        results["transcription_text"] = get_transcription(file)
 
     # 3️⃣ Patient & Transcription 병렬 실행
     t1 = threading.Thread(target=fetch_patient)
@@ -56,7 +56,7 @@ def composite_transcribe_and_summarize(patient_id: int, file: UploadFile) -> Dic
         }
 
     # 5️⃣ Summarization microservice 호출 (Async + polling)
-    summary_result = generate_summary(transcription_text)
+    summary_result = get_summarization(transcription_text)
 
     # 6️⃣ 최종 응답 Aggregation
     return {
