@@ -42,7 +42,7 @@ def main():
         pprint(get_summarization(SUMMARIZATION_ID))
 
     elif cmd == "2":
-        pprint(create_summarization(INPUT_TEXT, SUMMARY))
+        pprint(create_summarization("0257ba86-e027-4edd-b6b1-7f9e026838db", INPUT_TEXT, SUMMARY))
 
     elif cmd == "3":
         pprint(update_summarization(SUMMARIZATION_ID, "UPDATED SUMMARY"))

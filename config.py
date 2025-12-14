@@ -37,3 +37,7 @@ def print_config():
         print(f"Composite Service:   {COMPOSITE_MS_URL}")
         print(f"UI Base URL:         {UI_BASE_URL}")
         print("=====================================\n")
+
+
+#curl -i -H 'If-None-Match: W/"1763950686.0"' http://10.128.0.3:8000/patients/0257ba86-e027-4edd-b6b1-7f9e026838db
+# curl "http://10.128.0.3:8000//patients?gender=male"

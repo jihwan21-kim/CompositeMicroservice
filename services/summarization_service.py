@@ -26,11 +26,11 @@ def get_summarization(summarization_id: int):
 # -----------------------------
 # POST /summarizations
 # -----------------------------
-def create_summarization(input_text: str, summary: str):
+def create_summarization(patient_id: str, input_text: str, summary: str):
     try:
         r = requests.post(
             f"{SUMMARIZATION_MS_URL}/summarizations",
-            params={"input_text": input_text, "summary": summary},
+            params={"patient_id": patient_id, "input_text": input_text, "summary": summary},
             timeout=REQUEST_TIMEOUT,
         )
     except requests.exceptions.RequestException as e:
