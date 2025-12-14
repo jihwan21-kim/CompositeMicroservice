@@ -1,65 +1,125 @@
-# app/services/summarization_service.py
-
-import time
 import requests
-from typing import Dict, Any
 from config import SUMMARIZATION_MS_URL, REQUEST_TIMEOUT
 
 
-def request_async_summarization(input_text: str) -> Dict[str, Any]:
-    """Call /summarizations/async to start async summarization."""
+# -----------------------------
+# GET /summarizations/{id}
+# -----------------------------
+def get_summarization(summarization_id: int):
     try:
-        res = requests.post(
-            f"{SUMMARIZATION_MS_URL}/summarizations/async",
-            params={"input_text": input_text},
-            timeout=REQUEST_TIMEOUT
+        r = requests.get(
+            f"{SUMMARIZATION_MS_URL}/summarizations/{summarization_id}",
+            timeout=REQUEST_TIMEOUT,
         )
-        if res.status_code == 202:
-            return res.json()
-        else:
-            return {"error": f"Failed to start job: {res.text}"}
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         return {"error": "Summarization service unreachable", "details": str(e)}
 
+    if r.status_code == 200:
+        return {"status": "success", "data": r.json()}
 
-def poll_summarization_job(job_id: str, retries: int = 15, delay: int = 2) -> Dict[str, Any]:
-    """
-    Poll /jobs/{job_id} until 'completed' or until max retries reached.
-    """
-    for _ in range(retries):
-        try:
-            res = requests.get(f"{SUMMARIZATION_MS_URL}/jobs/{job_id}", timeout=REQUEST_TIMEOUT)
-            data = res.json()
+    if r.status_code == 404:
+        return {"error": "Summarization not found"}
 
-            if data.get("status") == "completed":
-                return data  # contains summary
-            elif data.get("status") == "failed":
-                return {"error": "Summarization failed"}
-        except Exception as e:
-            pass
-
-        time.sleep(delay)
-
-    return {"error": "Timeout waiting for summarization"}
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
 
 
-def generate_summary(input_text: str) -> Dict[str, Any]:
-    """
-    Composite helper:
-    1) 요청 보내기 (202 Accepted)
-    2) job_id polling
-    3) 최종 요약 결과 반환
-    """
-    job_response = request_async_summarization(input_text)
+# -----------------------------
+# POST /summarizations
+# -----------------------------
+def create_summarization(input_text: str, summary: str):
+    try:
+        r = requests.post(
+            f"{SUMMARIZATION_MS_URL}/summarizations",
+            params={"input_text": input_text, "summary": summary},
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Summarization service unreachable", "details": str(e)}
 
-    if "job_id" not in job_response:
-        return {"error": "Failed to create summarization job"}
+    if r.status_code == 201:
+        return {"status": "success", "data": r.json()}
 
-    job_id = job_response["job_id"]
-    final_result = poll_summarization_job(job_id)
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
 
-    return {
-        "job_id": job_id,
-        "summary": final_result.get("summary"),
-        "status": final_result.get("status")
-    }
+
+# -----------------------------
+# PUT /summarizations/{id}
+# -----------------------------
+def update_summarization(summarization_id: int, summary: str):
+    try:
+        r = requests.put(
+            f"{SUMMARIZATION_MS_URL}/summarizations/{summarization_id}",
+            params={"summary": summary},
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Summarization service unreachable", "details": str(e)}
+
+    if r.status_code == 200:
+        return {"status": "success", "data": r.json()}
+
+    if r.status_code == 404:
+        return {"error": "Summarization not found"}
+
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
+
+
+# -----------------------------
+# DELETE /summarizations/{id}
+# -----------------------------
+def delete_summarization(summarization_id: int):
+    try:
+        r = requests.delete(
+            f"{SUMMARIZATION_MS_URL}/summarizations/{summarization_id}",
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Summarization service unreachable", "details": str(e)}
+
+    if r.status_code == 200:
+        return {"status": "success", "data": r.json()}
+
+    if r.status_code == 404:
+        return {"error": "Summarization not found"}
+
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
+
+
+# -----------------------------
+# POST /summarizations/async
+# -----------------------------
+def create_async_summarization(input_text: str):
+    try:
+        r = requests.post(
+            f"{SUMMARIZATION_MS_URL}/summarizations/async",
+            params={"input_text": input_text},
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Summarization service unreachable", "details": str(e)}
+
+    if r.status_code == 202:
+        return {"status": "accepted", "data": r.json()}
+
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
+
+
+# -----------------------------
+# GET /jobs/{job_id}
+# -----------------------------
+def get_job_status(job_id: str):
+    try:
+        r = requests.get(
+            f"{SUMMARIZATION_MS_URL}/jobs/{job_id}",
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Summarization service unreachable", "details": str(e)}
+
+    if r.status_code == 200:
+        return {"status": "success", "data": r.json()}
+
+    if r.status_code == 404:
+        return {"error": "Job not found"}
+
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}

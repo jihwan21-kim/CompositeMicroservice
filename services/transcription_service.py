@@ -1,53 +1,120 @@
-# app/services/transcription_service.py
-
 import requests
-from typing import Dict, Any
-from fastapi import UploadFile
+from uuid import UUID
 from config import TRANSCRIPTIONS_MS_URL, REQUEST_TIMEOUT
-from models.transcription_model import Transcription
 
 
-def create_transcription_job(file: UploadFile) -> Dict[str, Any]:
-    """
-    Composite → Transcription Microservice
-    POST /transcriptions (multipart/form-data with file)
-    """
-    files = {
-        "file": (file.filename, file.file, file.content_type)
-    }
-
+# -----------------------------
+# GET /transcriptions
+# -----------------------------
+def get_all_transcriptions():
     try:
-        res = requests.post(
+        r = requests.get(
             f"{TRANSCRIPTIONS_MS_URL}/transcriptions",
-            files=files,
-            timeout=REQUEST_TIMEOUT
+            timeout=REQUEST_TIMEOUT,
         )
     except requests.exceptions.RequestException as e:
         return {"error": "Transcription service unreachable", "details": str(e)}
 
-    if res.status_code != 201:
-        return {"error": f"Transcription failed", "status_code": res.status_code, "details": res.text}
+    if r.status_code == 200:
+        return {"status": "success", "data": r.json()}
 
-    # TranscriptionRead 구조를 Pydantic 모델로 검증
-    data = res.json()
-    transcription_obj = Transcription.model_validate(data)
-
-    return {
-        "status": "success",
-        "data": transcription_obj,
-    }
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
 
 
-def get_transcription_text(file: UploadFile) -> str | None:
+# -----------------------------
+# GET /transcriptions/{id}
+# -----------------------------
+def get_transcription(trans_id: UUID):
+    try:
+        r = requests.get(
+            f"{TRANSCRIPTIONS_MS_URL}/transcriptions/{trans_id}",
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Transcription service unreachable", "details": str(e)}
+
+    if r.status_code == 200:
+        return {"status": "success", "data": r.json()}
+
+    if r.status_code == 404:
+        return {"error": "Transcription not found"}
+
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
+
+
+# -----------------------------
+# POST /transcriptions
+# -----------------------------
+def create_transcription(audio_file_path: str):
     """
-    Convenience helper:
-    - creates transcription job
-    - returns only the 'text' field
+    Upload audio file (multipart/form-data)
     """
-    result = create_transcription_job(file)
+    try:
+        with open(audio_file_path, "rb") as f:
+            files = {"file": (audio_file_path, f)}
+            r = requests.post(
+                f"{TRANSCRIPTIONS_MS_URL}/transcriptions",
+                files=files,
+                timeout=REQUEST_TIMEOUT,
+            )
+    except FileNotFoundError:
+        return {"error": "Audio file not found"}
+    except requests.exceptions.RequestException as e:
+        return {"error": "Transcription service unreachable", "details": str(e)}
 
-    if result.get("status") != "success":
-        return None
+    if r.status_code == 201:
+        return {"status": "success", "data": r.json()}
 
-    transcription: Transcription = result["data"]
-    return transcription.text
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
+
+
+# -----------------------------
+# PUT /transcriptions/{id}
+# -----------------------------
+def update_transcription(trans_id: UUID, update_payload: dict):
+    """
+    update_payload can include:
+    - audio_filename
+    - text
+    - status
+    """
+    try:
+        r = requests.put(
+            f"{TRANSCRIPTIONS_MS_URL}/transcriptions/{trans_id}",
+            json=update_payload,
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Transcription service unreachable", "details": str(e)}
+
+    if r.status_code == 200:
+        return {"status": "success", "data": r.json()}
+
+    if r.status_code == 404:
+        return {"error": "Transcription not found"}
+
+    if r.status_code == 400:
+        return {"error": "Invalid update payload"}
+
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
+
+
+# -----------------------------
+# DELETE /transcriptions/{id}
+# -----------------------------
+def delete_transcription(trans_id: UUID):
+    try:
+        r = requests.delete(
+            f"{TRANSCRIPTIONS_MS_URL}/transcriptions/{trans_id}",
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return {"error": "Transcription service unreachable", "details": str(e)}
+
+    if r.status_code == 204:
+        return {"status": "success"}
+
+    if r.status_code == 404:
+        return {"error": "Transcription not found"}
+
+    return {"error": f"Unexpected response: {r.status_code}", "details": r.text}
