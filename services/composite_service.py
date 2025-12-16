@@ -78,44 +78,57 @@ def process_patient_audio(payload: dict):
     """
 
     # -----------------------------
-    # 1️⃣ Create Patient
+    # 1️⃣ Create Patient (sync)
     # -----------------------------
-    patient_data = payload["patient"]
-
-    patient_res = create_patient(patient_data)
+    patient_res = create_patient(payload["patient"])
     if "error" in patient_res:
         return patient_res
 
     patient_id = patient_res["data"]["id"]
 
     # -----------------------------
-    # 2️⃣ Create Transcription
+    # 2️⃣ Transcription (thread)
     # -----------------------------
-    audio_file_path = payload["audio_filename"]
+    transcription_result = {}
 
-    transcription_res = create_transcription(audio_file_path)
+    def transcription_worker():
+        res = create_transcription(patient_id, payload["audio_filename"])
+        transcription_result["data"] = res
+
+    transcription_thread = threading.Thread(target=transcription_worker)
+    transcription_thread.start()
+    transcription_thread.join()  # wait for completion
+
+    transcription_res = transcription_result["data"]
     if "error" in transcription_res:
         return transcription_res
 
     transcription_text = transcription_res["data"]["text"]
 
     # -----------------------------
-    # 3️⃣ Create Summarization
+    # 3️⃣ Summarization (thread)
     # -----------------------------
-    summarization_res = create_summarization(
-        patient_id=patient_id,
-        input_text=transcription_text
-    )
+    summarization_result = {}
 
+    def summarization_worker():
+        res = create_summarization(
+            patient_id=patient_id,
+            input_text=transcription_text
+        )
+        summarization_result["data"] = res
+
+    summarization_thread = threading.Thread(target=summarization_worker)
+    summarization_thread.start()
+    summarization_thread.join()
+
+    summarization_res = summarization_result["data"]
     if "error" in summarization_res:
         return summarization_res
-
-    summary = summarization_res["data"]["summary"]
 
     # -----------------------------
     # 4️⃣ Final Response
     # -----------------------------
     return {
         "patient_id": patient_id,
-        "summary": summary
+        "summary": summarization_res["data"]["summary"]
     }
