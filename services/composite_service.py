@@ -6,7 +6,7 @@ from fastapi import UploadFile
 
 from services.patient_service import create_patient, get_patient_by_id
 from services.transcription_service import create_transcription, get_transcription
-from services.summarization_service import create_summarization, get_summarization
+from services.summarization_service import create_summarization
 from models.patient_model import Patient
 
 
