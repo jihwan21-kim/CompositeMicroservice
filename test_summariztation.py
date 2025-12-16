@@ -9,6 +9,7 @@ from services.summarization_service import (
     delete_summarization,
     create_async_summarization,
     get_job_status,
+    delete_summaries_by_patient,
 )
 
 SUMMARIZATION_ID = "0257ba86-e027-4edd-b6b1-7f9e026838db"
@@ -48,7 +49,7 @@ def main():
         pprint(update_summarization(SUMMARIZATION_ID, INPUT_TEXT, "UPDATED SUMMARY"))
 
     elif cmd == "4":
-        pprint(delete_summarization(SUMMARIZATION_ID))
+        pprint(delete_summaries_by_patient(SUMMARIZATION_ID))
 
     elif cmd == "5":
         result = create_async_summarization(SUMMARIZATION_ID, INPUT_TEXT)
