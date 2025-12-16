@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from services.composite_service import process_patient_audio
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Composite Microservice",
@@ -7,6 +8,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],      # 개발 중엔 * OK
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/process-audio", status_code=201)
 def process_audio(payload: dict):
