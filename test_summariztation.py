@@ -3,15 +3,15 @@ from pprint import pprint
 import time
 
 from services.summarization_service import (
-    get_summarization,
     create_summarization,
+    get_summarizations,
     update_summarization,
     delete_summarization,
     create_async_summarization,
     get_job_status,
 )
 
-SUMMARIZATION_ID = 1
+SUMMARIZATION_ID = "0257ba86-e027-4edd-b6b1-7f9e026838db"
 INPUT_TEXT = "This is a very long medical transcription that needs summarization."
 SUMMARY = "This is"
 
@@ -39,19 +39,19 @@ def main():
     cmd = sys.argv[1]
 
     if cmd == "1":
-        pprint(get_summarization(SUMMARIZATION_ID))
+        pprint(get_summarizations(SUMMARIZATION_ID))
 
     elif cmd == "2":
-        pprint(create_summarization("0257ba86-e027-4edd-b6b1-7f9e026838db", INPUT_TEXT, SUMMARY))
+        pprint(create_summarization(SUMMARIZATION_ID, INPUT_TEXT))
 
     elif cmd == "3":
-        pprint(update_summarization(SUMMARIZATION_ID, "UPDATED SUMMARY"))
+        pprint(update_summarization(SUMMARIZATION_ID, INPUT_TEXT, "UPDATED SUMMARY"))
 
     elif cmd == "4":
         pprint(delete_summarization(SUMMARIZATION_ID))
 
     elif cmd == "5":
-        result = create_async_summarization(INPUT_TEXT)
+        result = create_async_summarization(SUMMARIZATION_ID, INPUT_TEXT)
         pprint(result)
 
         if "data" in result:

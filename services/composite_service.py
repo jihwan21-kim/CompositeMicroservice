@@ -4,9 +4,9 @@ import threading
 from typing import Dict, Any
 from fastapi import UploadFile
 
-from services.patient_service import get_patient_by_id
-from services.transcription_service import get_transcription
-from services.summarization_service import get_summarization
+from services.patient_service import create_patient, get_patient_by_id
+from services.transcription_service import create_transcription, get_transcription
+from services.summarization_service import create_summarization, get_summarization
 from models.patient_model import Patient
 
 
@@ -66,4 +66,56 @@ def composite_transcribe_and_summarize(patient_id: int, file: UploadFile) -> Dic
         "job_id": summary_result.get("job_id"),
         "summary_status": summary_result.get("status"),
         "note": "Composite aggregation complete"
+    }
+
+def process_patient_audio(payload: dict):
+    """
+    payload = {
+        "patient": {"first_name": "...", "last_name": "..."},
+        "audio_filename": "...",
+        "text": "transcription text"
+    }
+    """
+
+    # -----------------------------
+    # 1️⃣ Create Patient
+    # -----------------------------
+    patient_data = payload["patient"]
+
+    patient_res = create_patient(patient_data)
+    if "error" in patient_res:
+        return patient_res
+
+    patient_id = patient_res["data"]["id"]
+
+    # -----------------------------
+    # 2️⃣ Create Transcription
+    # -----------------------------
+    audio_file_path = payload["audio_filename"]
+
+    transcription_res = create_transcription(audio_file_path)
+    if "error" in transcription_res:
+        return transcription_res
+
+    transcription_text = transcription_res["data"]["text"]
+
+    # -----------------------------
+    # 3️⃣ Create Summarization
+    # -----------------------------
+    summarization_res = create_summarization(
+        patient_id=patient_id,
+        input_text=transcription_text
+    )
+
+    if "error" in summarization_res:
+        return summarization_res
+
+    summary = summarization_res["data"]["summary"]
+
+    # -----------------------------
+    # 4️⃣ Final Response
+    # -----------------------------
+    return {
+        "patient_id": patient_id,
+        "summary": summary
     }

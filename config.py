@@ -9,7 +9,8 @@ Using environment variables makes it future-proof (Cloud Run / Docker).
 # ------------------- Microservice URLs -------------------
 
 PATIENTS_MS_URL = os.getenv("PATIENTS_MS_URL", "http://10.128.0.3:8000")
-TRANSCRIPTIONS_MS_URL = os.getenv("TRANSCRIPTIONS_MS_URL", "http://10.128.0.7:8000")
+#TRANSCRIPTIONS_MS_URL = os.getenv("TRANSCRIPTIONS_MS_URL", "http://10.128.0.7:8000")
+TRANSCRIPTIONS_MS_URL = os.getenv("TRANSCRIPTIONS_MS_URL", "https://transcriptions-service-486150289333.us-central1.run.app")
 SUMMARIZATION_MS_URL = os.getenv("SUMMARIZATION_MS_URL", "http://10.128.0.6:8000")
 
 # Composite internal IP (optional)
@@ -40,4 +41,7 @@ def print_config():
 
 
 #curl -i -H 'If-None-Match: W/"1763950686.0"' http://10.128.0.3:8000/patients/0257ba86-e027-4edd-b6b1-7f9e026838db
-# curl "http://10.128.0.3:8000//patients?gender=male"
+# curl "http://10.128.0.3:8000/patients?gender=male"
+#curl "http://10.128.0.7:8000/transcriptions"
+#curl "http://104.197.5.63:8000/transcriptions"
+#curl "https://transcriptions-service-486150289333.us-central1.run.app/transcriptions"

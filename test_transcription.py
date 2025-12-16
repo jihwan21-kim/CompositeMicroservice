@@ -11,7 +11,7 @@ from services.transcription_service import (
 )
 
 # 테스트용 (실제 존재하는 UUID로 바꿔도 됨)
-TRANSCRIPTION_ID = None  # 생성 후 자동 저장할 예정
+TRANSCRIPTION_ID = "0257ba86-e027-4edd-b6b1-7f9e026838db"
 AUDIO_FILE = "sample.wav"
 
 
