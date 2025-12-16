@@ -63,7 +63,7 @@ def get_transcription(trans_id: UUID):
 # -----------------------------
 # POST /transcriptions
 # -----------------------------
-def create_transcription(audio_file_path: str):
+def create_transcription(trans_id: str, audio_file_path: str):
     """
     Upload audio file (multipart/form-data)
     """
@@ -73,7 +73,7 @@ def create_transcription(audio_file_path: str):
                 "file": (audio_file_path, f)
             }
             r = requests.post(
-                f"{TRANSCRIPTIONS_MS_URL}/transcriptions",
+                f"{TRANSCRIPTIONS_MS_URL}/transcriptions/{trans_id}",
                 files=files,
                 timeout=REQUEST_TIMEOUT,
             )

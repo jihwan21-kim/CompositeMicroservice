@@ -42,7 +42,7 @@ def main():
         pprint(get_all_transcriptions())
 
     elif cmd == "2":
-        result = create_transcription(AUDIO_FILE)
+        result = create_transcription(TRANSCRIPTION_ID, AUDIO_FILE)
         pprint(result)
 
         if result.get("status") == "success":
