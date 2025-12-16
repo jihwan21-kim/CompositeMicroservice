@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from services.composite_service import process_patient_audio
 from fastapi.middleware.cors import CORSMiddleware
 
