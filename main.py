@@ -33,6 +33,12 @@ def process_audio(payload: dict):
 
     return result
 
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "service": "composite-microservice"
+    }
 
 @app.get("/")
 def root():
