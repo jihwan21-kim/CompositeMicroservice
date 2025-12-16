@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from services.composite_service import process_patient_audio
 from fastapi.middleware.cors import CORSMiddleware
+import json
 
 app = FastAPI(
     title="Composite Microservice",
