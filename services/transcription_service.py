@@ -63,20 +63,19 @@ def get_transcription(trans_id: UUID):
 # -----------------------------
 # POST /transcriptions
 # -----------------------------
-def create_transcription(trans_id: str, audio_file_path: str):
+def create_transcription(trans_id: str, audio_file_path: str, audio_file_content: bytes):
     """
     Upload audio file (multipart/form-data)
     """
     try:
-        with open(audio_file_path, "rb") as f:
-            files = {
-                "file": (audio_file_path, f)
-            }
-            r = requests.post(
-                f"{TRANSCRIPTIONS_MS_URL}/transcriptions/{trans_id}",
-                files=files,
-                timeout=REQUEST_TIMEOUT,
-            )
+        files = {
+            "file": (audio_file_path, audio_file_content)
+        }
+        r = requests.post(
+            f"{TRANSCRIPTIONS_MS_URL}/transcriptions/{trans_id}",
+            files=files,
+            timeout=REQUEST_TIMEOUT,
+        )
     except FileNotFoundError:
         return {"error": "Audio file not found"}
     except requests.exceptions.RequestException as e:

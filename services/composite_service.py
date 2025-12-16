@@ -68,7 +68,7 @@ def composite_transcribe_and_summarize(patient_id: int, file: UploadFile) -> Dic
         "note": "Composite aggregation complete"
     }
 
-def process_patient_audio(payload: dict):
+def process_patient_audio(payload: dict, audio_file_content: bytes):
     """
     payload = {
         "patient": {"first_name": "...", "last_name": "..."},
@@ -92,7 +92,7 @@ def process_patient_audio(payload: dict):
     transcription_result = {}
 
     def transcription_worker():
-        res = create_transcription(patient_id, payload["audio_filename"])
+        res = create_transcription(patient_id, payload["audio_filename"], audio_file_content)
         transcription_result["data"] = res
 
     transcription_thread = threading.Thread(target=transcription_worker)

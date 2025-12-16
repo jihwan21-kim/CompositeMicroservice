@@ -17,7 +17,12 @@ app.add_middleware(
 )
 
 @app.post("/process-audio", status_code=201)
-def process_audio(payload: dict):
+async def process_audio(
+    audio_file: UploadFile = File(...),
+    patient: str = Form(...),
+    text: str = Form(...),
+    audio_filename: str = Form(...)
+):
     """
     Expected payload:
     {
@@ -26,7 +31,14 @@ def process_audio(payload: dict):
       "text": "..."
     }
     """
-
+    patient_data = json.loads(patient)
+    audio_content = await audio_file.read()
+    payload = {
+            "patient": patient_data,
+            "audio_filename": audio_filename,
+            "text": text
+        }
+    
     # Basic validation (minimum required)
     if "patient" not in payload:
         raise HTTPException(status_code=400, detail="Missing patient data")
@@ -34,7 +46,7 @@ def process_audio(payload: dict):
     if "audio_filename" not in payload:
         raise HTTPException(status_code=400, detail="Missing audio_filename")
 
-    result = process_patient_audio(payload)
+    result = process_patient_audio(payload, audio_file_content=audio_content)
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result)
