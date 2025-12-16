@@ -12,7 +12,7 @@ from services.summarization_service import (
 )
 
 SUMMARIZATION_ID = "0257ba86-e027-4edd-b6b1-7f9e026838db"
-INPUT_TEXT = "This is a very long medical transcription that needs summarization."
+INPUT_TEXT = "The patient is a 54-year-old male who presents with intermittent chest pain and shortness of breath for the past three days. The pain is described as a tight, pressure-like sensation located in the center of the chest, occasionally radiating to the left shoulder. Symptoms are worsened with physical exertion and relieved by rest. The patient denies nausea, vomiting, or recent fever. Past medical history is significant for hypertension and hyperlipidemia. The patient is a former smoker with a 20-pack-year history. On examination, vital signs are stable, lungs are clear to auscultation, and heart sounds are regular without murmurs. An electrocardiogram was performed and showed no acute ischemic changes. The patient was advised to undergo further cardiac evaluation."
 SUMMARY = "This is"
 
 
